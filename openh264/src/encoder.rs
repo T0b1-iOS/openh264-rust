@@ -156,6 +156,30 @@ impl Encoder {
         })
     }
 
+    pub fn default_params() -> Result<SEncParamExt, Error> {
+        let raw_api = EncoderRawAPI::new()?;
+        let mut params = SEncParamExt::default();
+        unsafe {
+            raw_api.get_default_params(&mut params).ok()?;
+        }
+
+        Ok(params)
+    }
+
+    pub fn from_params(params: SEncParamExt) -> Result<Self, Error> {
+        let raw_api = EncoderRawAPI::new()?;
+
+        unsafe {
+            raw_api.initialize_ext(&params).ok()?;
+        }
+
+        Ok(Self {
+            params,
+            raw_api,
+            bit_stream_info: Default::default()
+        })
+    }
+
     /// Encodes a YUV source and returns the encoded bitstream.
     ///
     /// The returned bitstream consists of one or more NAL units or packets. The first packets contain
